@@ -22,10 +22,10 @@ RUN export GNUPGHOME="$(mktemp -d)" \
 
 # install exact version for repeatability
 ENV PS_VERSION 5.7.29-32.1.el7
-ENV PROXYSQL_VERSION 2.0.10-1.1.el7
+ENV PROXYSQL_VERSION 2.0.10-1.2.el7
 
-RUN curl -L -o /tmp/jq.rpm https://download.fedoraproject.org/pub/epel/7/x86_64/Packages/j/jq-1.6-1.el7.x86_64.rpm \
-	&& curl -L -o /tmp/oniguruma.rpm https://download.fedoraproject.org/pub/epel/7/x86_64/Packages/o/oniguruma-5.9.5-3.el7.x86_64.rpm \
+RUN curl -L -o /tmp/jq.rpm https://download.fedoraproject.org/pub/epel/7/x86_64/Packages/j/jq-1.6-2.el7.x86_64.rpm \
+	&& curl -L -o /tmp/oniguruma.rpm https://download.fedoraproject.org/pub/epel/7/x86_64/Packages/o/oniguruma-6.8.2-1.el7.x86_64.rpm \
 	&& rpmkeys --checksig /tmp/jq.rpm /tmp/oniguruma.rpm \
 	&& rpm -i /tmp/jq.rpm /tmp/oniguruma.rpm \
 	&& rm -rf /tmp/jq.rpm /tmp/oniguruma.rpm
@@ -48,9 +48,7 @@ RUN groupadd -g 1001 proxysql \
 
 # we need licenses from docs
 RUN sed -i '/nodocs/d' /etc/yum.conf || : \
-        && repoquery -a --location \
-               proxysql2-${PROXYSQL_VERSION} \
-                   | xargs curl -L -o /tmp/proxysql2-${PROXYSQL_VERSION}.rpm \
+        && curl -L -o /tmp/proxysql2-${PROXYSQL_VERSION}.rpm http://10.111.64.26/proxysql2-${PROXYSQL_VERSION}.x86_64.rpm \
         && rpm -iv /tmp/proxysql2-${PROXYSQL_VERSION}.rpm --nodeps \
         && rm -rf /tmp/proxysql2-${PROXYSQL_VERSION}.rpm \
         && yum clean all \
